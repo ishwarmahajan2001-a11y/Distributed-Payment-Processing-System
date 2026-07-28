@@ -1,0 +1,211 @@
+{
+	"info": {
+		"_postman_id": "a3f44b33-8365-4974-b42d-e85a95ce69b4",
+		"name": "PAYMENT SYSTEM API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40976952"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/api/validate/payment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const requestBody = pm.request.body.raw;",
+							"const secret = \"my-super-secret-key-for-elos\"; ",
+							"",
+							"const signature = CryptoJS.HmacSHA256(requestBody, secret).toString(CryptoJS.enc.Base64);",
+							"",
+							"pm.request.headers.add({",
+							"    key: \"X-Client-Signature\",",
+							"    value: signature",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"merchantTransactionId\": \"abc-12345\",\r\n  \"user\": {\r\n    \"email\": \"customer@elos.dk\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/validate/payment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"validate",
+						"payment"
+					]
+				},
+				"description": "API VALIDATE"
+			},
+			"response": []
+		},
+		{
+			"name": "[Success] Initiate New Payment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const requestBody = pm.request.body.raw;\r",
+							"const secret = \"my-super-secret-key-for-elos\"; \r",
+							"\r",
+							"const signature = CryptoJS.HmacSHA256(requestBody, secret).toString(CryptoJS.enc.Base64);\r",
+							"\r",
+							"pm.request.headers.add({\r",
+							"    key: \"X-Client-Signature\",\r",
+							"    value: signature\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// This script runs *after* a successful response is received.\r",
+							"try {\r",
+							"    const response = pm.response.json();\r",
+							"    // This navigates the complex response string to find the ID.\r",
+							"    const providerResponse = JSON.parse(response[\"Downstream response: [Payment processing initiated. Provider response: \"].slice(0, -1));\r",
+							"    const transactionId = providerResponse.transactionReferenceId;\r",
+							"\r",
+							"    if (transactionId) {\r",
+							"        pm.collectionVariables.set(\"transactionId\", transactionId);\r",
+							"        console.log(\"Saved transactionId for next step:\", transactionId);\r",
+							"    }\r",
+							"} catch (e) {\r",
+							"    console.log(\"Could not find transactionId in the response.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"merchantTransactionId\": \"elos-dk-{{$randomInt}}\",\r\n  \"user\": {\r\n    \"email\": \"customer@elos.dk\"\r\n  },\r\n  \"amount\": 99.99,\r\n  \"currency\": \"DKK\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/validate/payment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"validate",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Admin] Update Status to APPROVED",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/api/admin/update-status?transactionReferenceId=4b96b34d-0d8c-421c-b472-804ba256ee67&newStatus=APPROVED",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"admin",
+						"update-status"
+					],
+					"query": [
+						{
+							"key": "transactionReferenceId",
+							"value": "4b96b34d-0d8c-421c-b472-804ba256ee67"
+						},
+						{
+							"key": "newStatus",
+							"value": "APPROVED"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Admin] Refresh Validation Rules",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "[Failure] Invalid HMAC Signature",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "[Failure] Invalid RSA Signature",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "[Failure] Payment Attempt Threshold",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

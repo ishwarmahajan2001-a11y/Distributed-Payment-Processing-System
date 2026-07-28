@@ -1,0 +1,54 @@
+# elos-payment-system/docker-compose.yml
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-payment-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: payment_processing_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    # --- NEW SECTION: HEALTHCHECK ---
+    # This tells Docker to repeatedly run a command inside the container.
+    # The container is not considered "healthy" until this command succeeds.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6.2-alpine
+    # (No changes needed for redis, it starts fast)
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  mongodb:
+    image: mongo:5.0
+    # (No changes needed for mongo)
+    container_name: mongodb-logs
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  activemq:
+    image: rmohr/activemq:5.15.9
+    # (No changes needed for activemq)
+    container_name: activemq-broker
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+
+volumes:
+  mysql-data:
+  redis-data:
+  mongo-data:

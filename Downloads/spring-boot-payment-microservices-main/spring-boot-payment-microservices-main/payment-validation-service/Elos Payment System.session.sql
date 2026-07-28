@@ -1,0 +1,1 @@
+UPDATE validation_rule SET is_active = false WHERE rule_name = 'paymentAttemptThresholdValidator';

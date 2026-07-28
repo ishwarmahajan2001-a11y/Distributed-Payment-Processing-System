@@ -1,0 +1,86 @@
+############################
+# IDE & Editor Files
+############################
+.idea
+.iml
+.ipr
+.iws
+.classpath
+.project
+.settings
+nbproject
+
+############################
+# OS Files
+############################
+.DS_Store
+
+############################
+# Build Output
+############################
+target
+build
+out
+
+############################
+# Dependency Directories
+############################
+node_modules
+
+############################
+# Logs
+############################
+.log
+logs
+
+############################
+# Local Configuration
+############################
+application-local.properties
+
+############################
+# Maven  Release Files
+############################
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+############################
+# Compiled Files
+############################
+.class
+
+############################
+# BlueJ
+############################
+.ctxt
+
+############################
+# Mobile Tools for Java (J2ME)
+############################
+.mtj.tmp
+
+############################
+# Package  Archive Files
+############################
+.jar
+.war
+.nar
+.ear
+.zip
+.tar.gz
+.rar
+
+############################
+# JVM Crash Logs
+############################
+hs_err_pid
+
+#
+# Security: Ignore all private and public key files
+#
+*.pem
